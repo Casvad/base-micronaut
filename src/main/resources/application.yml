@@ -1,0 +1,66 @@
+micronaut:
+  application:
+    name: base-micronaut
+  server:
+    context-path: ${BASE_PATH:`/api/ms/base-micronaut`}
+    cors:
+      enabled: true
+  http:
+    services:
+      default-ms:
+        urls:
+          - ${HOST_MICROSERVICE:`https://localhost:8080`}
+        read-timeout: 2000ms
+        connect-timeout: 500ms
+        pool:
+          enabled: true
+          max-connections: 400
+          acquire-timeout: 500ms
+  router:
+    versioning:
+      enabled: true
+      default-version: 1
+      header:
+        enabled: true
+        names:
+          - 'X-API-VERSION'
+          - 'Accept-Version'
+      parameter:
+        enabled: false
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      redoc:
+        paths: classpath:META-INF/swagger/views/redoc
+        mapping: /api/ms/base-micronaut/redoc/**
+datasources:
+  default:
+    url: jdbc:postgresql://${DB_HOST:`localhost`}:${DB_PORT:`5432`}/${DB_NAME:`base-micronaut`}?socketTimeout=60
+    username: ${DB_USER:`docker`}
+    password: ${DB_PASSWORD:`docker`}
+    driverClassName: org.postgresql.Driver
+    schema-generate: CREATE_DROP
+    dialect: POSTGRES
+    maximum-pool-size: 5
+jpa.default.properties.hibernate.hbm2ddl.auto: update
+jpa:
+  default:
+    packages-to-scan:
+      - 'com.carlos.models'
+    properties:
+      hibernate:
+        show_sql: true
+flyway:
+  datasources:
+    default:
+      locations: classpath:migrations
+      baseline-on-migrate: true
+kafka:
+  bootstrap:
+    servers: ${KAFKA_HOST_ARRAY:`localhost:9092`}
+redis:
+  uri: redis://${REDIS_HOST:`localhost:6379`}
+  io-thread-pool-size: 10
+  computation-thread-pool-size: 4
+  timeout: 500ms
