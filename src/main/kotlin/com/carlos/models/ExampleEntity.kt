@@ -20,31 +20,31 @@ import javax.validation.constraints.Size
 @Entity
 @Table(name = "example_entity")
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType::class)
-open class ExampleModel {
+data class ExampleEntity (
     @Id
     @SequenceGenerator(name = "example_entity_id_seq_generator", sequenceName = "example_entity_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_entity_id_seq_generator")
-    open var id: Long? = null
+    val id: Long = 0,
 
     @NotBlank
     @field:Size(max = 25)
     @field:JsonProperty("name")
     @Column(name = "name", nullable = false)
-    open var name: String = ""
+    val name: String = "",
 
-    @field:JsonProperty("order")
-    @Column(name = "order", nullable = true)
-    open var order: Int = 0
+    @field:JsonProperty("index")
+    @Column(name = "index", nullable = true)
+    val index: Int = 0,
 
     @field:JsonProperty("additional_information")
     @Type(type = "jsonb")
     @Column(name = "additional_information", nullable = true)
-    open var customerAddress: Map<String, Any?> = mapOf()
+    val additionalInformation: Map<String, Any?> = mapOf(),
 
 
     @field:JsonProperty("created_at")
     @Column(name = "created_at", nullable = false)
     @JsonFormat
         (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    open var createdAt: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
-}
+    val createdAt: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
+)
