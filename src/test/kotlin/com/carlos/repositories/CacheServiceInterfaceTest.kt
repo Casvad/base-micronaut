@@ -14,11 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension
 
 @ExtendWith(MockitoExtension::class)
 @MicronautTest(transactional = false)
-class ExampleEntityRepositoryTest : BaseTest() {
-
+class CacheServiceInterfaceTest : BaseTest() {
 
     @Inject
-    private lateinit var exampleEntityRepository: ExampleEntityRepository
+    private lateinit var cacheServiceInterface: CacheServiceInterface
 
     @BeforeEach
     fun flush() {
@@ -32,18 +31,23 @@ class ExampleEntityRepositoryTest : BaseTest() {
     }
 
     @Test
-    fun `GIVEN ExampleEntityRepository WHEN save SHOULD save ok`() {
+    fun `GIVEN CacheServiceInterfaceTest WHEN save SHOULD save ok`() {
 
-        val entity = this.exampleEntityRepository.save(
-            ExampleEntity(
+        this.cacheServiceInterface.setKey(
+            key = "hello",
+            ttl = 60,
+            data = ExampleEntity(
                 name = "Carlos",
                 additionalInformation = mapOf("hello" to "World")
             )
         )
 
-        val dbModel = this.exampleEntityRepository.findById(entity.id)
+        this.awaitUntilAssert {
 
-        Assertions.assertTrue(dbModel.isPresent, "Db model not in database")
-        Assertions.assertEquals("World", dbModel.get().additionalInformation["hello"])
+            val data = this.cacheServiceInterface.getKey("hello", ExampleEntity::class.java)
+
+            Assertions.assertNotNull(data, "Db model not in redis database")
+            Assertions.assertEquals("World", data!!.additionalInformation["hello"])
+        }
     }
 }

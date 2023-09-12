@@ -2,6 +2,7 @@ package com.carlos
 
 import com.carlos.utils.FileManagerUtil
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.lettuce.core.api.StatefulRedisConnection
 import io.micronaut.transaction.SynchronousTransactionManager
 import jakarta.inject.Inject
 import org.awaitility.Awaitility
@@ -23,6 +24,9 @@ open class BaseTest {
     @Inject
     protected lateinit var transactionManager: SynchronousTransactionManager<Connection>
 
+    @Inject
+    protected lateinit var redis: StatefulRedisConnection<String, String>
+
     private lateinit var mockServer: ClientAndServer
 
     fun startMockServer() {
@@ -35,6 +39,10 @@ open class BaseTest {
 
     fun flushDatabase() {
 
+        val keys = this.redis.sync().keys("*")
+        if (keys.isNotEmpty()) {
+            this.redis.sync().del(*keys.toTypedArray())
+        }
 
         this.transactionManager.executeWrite {
             this.connection.prepareStatement(FileManagerUtil.getQuery("clean.sql"))
@@ -90,9 +98,9 @@ open class BaseTest {
         return FileManagerUtil.getFile("/json/", "$fileName.json")
     }
 
-    protected fun awaitUntilAssert(assertion: () -> Boolean) {
+    protected fun awaitUntilAssert(assertion: () -> Unit) {
         Awaitility.await().untilAsserted {
-            Assertions.assertTrue(assertion)
+            assertion()
         }
     }
 

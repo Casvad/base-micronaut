@@ -14,7 +14,7 @@ micronaut:
         connect-timeout: 500ms
         pool:
           enabled: true
-          max-connections: 400
+          max-connections: 40
           acquire-timeout: 500ms
   router:
     versioning:
@@ -60,6 +60,7 @@ kafka:
   bootstrap:
     servers: ${KAFKA_HOST_ARRAY:`localhost:9092`}
 redis:
+  prefix: "bmn:"
   uri: redis://${REDIS_HOST:`localhost:6379`}
   io-thread-pool-size: 10
   computation-thread-pool-size: 4
