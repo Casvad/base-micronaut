@@ -3,6 +3,7 @@ package com.carlos.models
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType
+import io.micronaut.core.annotation.Introspected
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import java.time.LocalDateTime
@@ -20,6 +21,7 @@ import javax.validation.constraints.Size
 @Entity
 @Table(name = "example_entity")
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType::class)
+@Introspected
 data class ExampleEntity (
     @Id
     @SequenceGenerator(name = "example_entity_id_seq_generator", sequenceName = "example_entity_id_seq", allocationSize = 1)
@@ -41,10 +43,8 @@ data class ExampleEntity (
     @Column(name = "additional_information", nullable = true)
     val additionalInformation: Map<String, Any?> = mapOf(),
 
-
     @field:JsonProperty("created_at")
     @Column(name = "created_at", nullable = false)
-    @JsonFormat
-        (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     val createdAt: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
 )

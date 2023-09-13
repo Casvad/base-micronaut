@@ -111,4 +111,9 @@ open class BaseTest {
             T::class.java
         )
     }
+
+    protected inline fun <reified T> String.toObject(): T {
+
+        return objectMapper.readValue(this, T::class.java)
+    }
 }
